@@ -58,10 +58,49 @@
       </article>`;
   }
 
+  // "T-Shirt" -> "T-Shirts", "Hoodie" -> "Hoodies", "Hat" -> "Hats".
+  function typeHeading(t) {
+    if (!t) return 'Other';
+    return /s$/i.test(t) ? t : t + 's';
+  }
+
   function renderGrid(products) {
-    grid.innerHTML = products.map(productCard).join('');
-    // Cards are visible by default — no JS-gated reveal that could leave
-    // them stuck hidden. Hover/transition effects come from CSS.
+    if (!products.length) { grid.innerHTML = ''; return; }
+
+    // Primary grouping: product type. Insertion order is preserved so the
+    // server's BEST_SELLING sort still drives which section comes first.
+    const byType = new Map();
+    products.forEach(p => {
+      const t = p.type || 'Other';
+      if (!byType.has(t)) byType.set(t, []);
+      byType.get(t).push(p);
+    });
+
+    let html = '';
+    byType.forEach((items, t) => {
+      // Secondary grouping: collection (a product's first collection).
+      const byCol = new Map();
+      items.forEach(p => {
+        const c = (p.collections && p.collections[0]) || '';
+        if (!byCol.has(c)) byCol.set(c, []);
+        byCol.get(c).push(p);
+      });
+
+      // Only surface collection sub-headings when a type spans 2+ collections.
+      const splitByCollection = byCol.size > 1;
+      let inner = '';
+      byCol.forEach((cItems, c) => {
+        if (splitByCollection && c) inner += `<h3 class="collection-title">${c}</h3>`;
+        inner += `<div class="section-grid">${cItems.map(productCard).join('')}</div>`;
+      });
+
+      html += `<section class="store-section">
+        <h2 class="section-type-title">${typeHeading(t)}</h2>
+        ${inner}
+      </section>`;
+    });
+
+    grid.innerHTML = html;
   }
 
   /* ── Cart drawer rendering ─────────────────────────────────────── */

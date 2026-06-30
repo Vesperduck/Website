@@ -120,6 +120,7 @@ const PRODUCTS_QUERY = `
     products(first: $n, sortKey: BEST_SELLING) {
       edges { node {
         id title handle description productType
+        collections(first: 5) { edges { node { title handle } } }
         priceRange { minVariantPrice { amount currencyCode } }
         options { name values }
         images(first: 4) { edges { node { url altText } } }
@@ -150,6 +151,7 @@ function mapProduct(node) {
     price: parseFloat(node.priceRange.minVariantPrice.amount),
     currency: node.priceRange.minVariantPrice.currencyCode,
     images: node.images.edges.map(e => e.node.url),
+    collections: node.collections ? node.collections.edges.map(e => e.node.title) : [],
     options: node.options.map(o => ({ name: o.name, values: o.values })),
     variants,
   };
