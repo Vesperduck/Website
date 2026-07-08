@@ -17,7 +17,7 @@
 ═══════════════════════════════════════════════════════════════════ */
 
 const SHOPIFY_CONFIG = {
-  domain: 'm5vw0t-1j.myshopify.com',          // ← REQUIRED: your 'xxxx.myshopify.com' domain
+  domain: 'store.vesper.mu',                  // ← Shopify storefront domain (custom domain)
   storefrontToken: 'ffe452f503786727bb1cc9bd2cdf3e43', // Storefront API access token
   apiVersion: '2024-10',
 };
